@@ -1,2 +1,2 @@
 # lrr
-python script
+python script, personal project strictly for educational purposes. 
