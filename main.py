@@ -9,7 +9,7 @@ def record_video():
     # get the current datetime
     now = datetime.now()
     url = "https://svs.itworkscdn.net/rudawlive/rudawlive.smil/rudawtv_chunks.m3u8"  # replace with your URL
-    duration = 30  # recording duration in seconds
+    duration = 900  # recording duration in seconds
     # create output file name based on current datetime and recording duration
     start_time_str = now.strftime("%d %B %Y %H.%M.%S")
     end_time = now + timedelta(seconds=duration)
@@ -20,6 +20,13 @@ def record_video():
     # get the video dimensions
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    #define resolution 
+    target_width = 640
+    target_height = 480
+    #calculate the scaling factor based on the target
+    scaling_factor =min(target_width/width, target_height/height)
+    new_width   =   int(width*scaling_factor)
+    new_height  =   int(height*scaling_factor)
     # set up FFmpeg command to record for a specific duration
     ffmpeg_cmd = [
         "C:/ffmpeg/bin/ffmpeg.exe",
@@ -27,9 +34,9 @@ def record_video():
         "-t", str(duration),
         "-f", "hls",
         "-i", url,
-        "-c:v", "libx264",
-        "-crf","23",
-        "-vf",f"scale={width//2}:{height//2}",
+        "-c:v", "libx265",
+        "-crf","28",
+        "-vf",f"scale={new_width}:{new_height}",
         output_file
     ]
     # start the FFmpeg process to record the video
@@ -37,8 +44,10 @@ def record_video():
     # release the video capture
     cap.release()
 
-# schedule the recording to run every day at 7:45 pm
-schedule.every().day.at("14:52").do(record_video)
+# schedule the recording to run every day at certain times
+recording_times =   ["19:45",   "20:45",    "21:45"]
+for time_slot   in  recording_times:
+    schedule.every().day.at(time_slot).do(record_video)
 
 while True:
     # run the scheduled tasks
