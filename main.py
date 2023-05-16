@@ -27,7 +27,9 @@ def record_video():
         "-t", str(duration),
         "-f", "hls",
         "-i", url,
-        "-c", "copy",
+        "-c:v", "libx264",
+        "-crf","23",
+        "-vf",f"scale={width//2}:{height//2}",
         output_file
     ]
     # start the FFmpeg process to record the video
@@ -36,7 +38,7 @@ def record_video():
     cap.release()
 
 # schedule the recording to run every day at 7:45 pm
-schedule.every().day.at("17:46").do(record_video)
+schedule.every().day.at("14:52").do(record_video)
 
 while True:
     # run the scheduled tasks
